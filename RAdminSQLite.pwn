@@ -16,6 +16,9 @@ native db_get_mem_handle(DB:db);
 native db_get_result_mem_handle(DBResult:result);
 native db_debug_openfiles();
 native db_debug_openresults();
+//============: FORWARDS :=============//
+forward PKick(id);
+forward PBan(id);
 //============: STOCKS :==============//
 stock DB_Escape(text[])
 {
@@ -536,14 +539,19 @@ CMD:kick(playerid,params[])
     GetPlayerName(id,name2,sizeof(name2));
     format(params,129, "{A9C4E4}%s was kicked From Server by %s",name2,name1);
     SendClientMessageToAll(0xf8f8f8fff,string);
-    Kick(id);
     SendClientMessage(id, 0xf8f8f8fff,"{f00f00}You have been kicked from the server!");
+    SetTimerEx("PKick", 1000, false, "i", id);
     }
     else
     {
     SendClientMessage(playerid,0xF8F8F8FFF,"ERROR: {FFFFFF}You're not authorized to use this command!");
     }
     return 1;
+}
+
+public PKick(id)
+{
+   Kick(id);
 }
 
 //==========: LEVEL 3 :============//
@@ -623,6 +631,35 @@ CMD:unfreeze(playerid,params[])
     SendClientMessage(playerid, 0xf8f8f8fff,"ERROR: {FFFFFF}You aren't authorized to use this command!");
     }
     return 1;
+}
+
+CMD:ban(playerid,params[])
+{
+    new id;
+    new name1[MAX_PLAYER_NAME];
+    new name2[MAX_PLAYER_NAME];
+    new string[128];
+    if(PlayerInfo[playerid][pAdmin] >= 3)
+    {
+    if(sscanf(params,"i",id)) return SendClientMessage(playerid, 0xF8f8f8FFF,"Syntax: {F00F00}/ban <id>");
+    if(!IsPlayerConnected(id)) return SendClientMessage(playerid, 0xf8f8f8fff,"ERROR: {FFFFFF}Player is not connected");
+    GetPlayerName(playerid,name1,sizeof(name1));
+    GetPlayerName(id,name2,sizeof(name2));
+    format(params,129, "{A9C4E4}%s was ban From Server by %s",name2,name1);
+    SendClientMessageToAll(0xf8f8f8fff,string);
+    SendClientMessage(id, 0xf8f8f8fff,"{f00f00}You have been banned from the server!");
+    SetTimerEx("PBan", 1000, false, "i", id);
+    }
+    else
+    {
+    SendClientMessage(playerid,0xF8F8F8FFF,"ERROR: {FFFFFF}You're not authorized to use this command!");
+    }
+    return 1;
+}
+
+public PBan(id)
+{
+   Ban(id);
 }
 
 CMD:respawncars(playerid,params[])
